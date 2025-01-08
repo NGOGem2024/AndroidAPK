@@ -51,7 +51,7 @@ interface PlaceOrderScreenProps {
 }
 
 const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }) => {
-  const { selectedItems } = route.params || { selectedItems: [] };
+  const { selectedItems , customerID} = route.params || { selectedItems: [] };
   const { cartItems, clearCart, removeCartItem } = useCart();
   const [groupedOrderItems, setGroupedOrderItems] = useState<GroupedItems>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -144,59 +144,90 @@ const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }
     }
   }, [cartItems, removeCartItem]);
 
+
+  // const handleConfirmOrder = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const allItems = Object.values(groupedOrderItems).flat();
+
+  //     if (allItems.length === 0) {
+  //       Alert.alert('Error', 'Please add items to your order');
+  //       return;
+  //     }
+
+  //     const invalidItems = allItems.filter(item => !item.ORDERED_QUANTITY || item.ORDERED_QUANTITY <= 0);
+  //     if (invalidItems.length > 0) {
+  //       Alert.alert('Error', 'Please specify valid quantities for all items');
+  //       return;
+  //     }
+
+  //     const orderPayload = {
+  //       CustomerID: route.params?.customerID || "1",
+  //       items: allItems.map(item => ({
+  //         LotNo: item.LOT_NO,
+  //         ItemID: item.ITEM_ID,
+  //         Quantity: item.ORDERED_QUANTITY
+  //       }))
+  //     };
+
+  //     const response = await axios.post(
+  //       API_ENDPOINTS.GET_PLACEORDER_DETAILS,
+  //       orderPayload
+  //     );
+
+  //     if (response.data.success) {
+  //       Alert.alert(
+  //         'Success',
+  //         'Order placed successfully! You will receive an email confirmation shortly.',
+  //         [
+  //           {
+  //             text: 'OK',
+  //             onPress: () => {
+  //               clearCart();
+  //               navigation.navigate('BottomTabNavigator', {
+  //                 shouldRefresh: true,
+  //                 customerID: String(route.params?.customerID || ''),
+  //               });
+  //             }
+  //           }
+  //         ]
+  //       );
+  //     } else {
+  //       Alert.alert('Error', response.data.message || 'Failed to place order');
+  //     }
+  //   } catch (error: any) {
+  //     const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+  //     Alert.alert('Error', `Failed to place order: ${errorMessage}`);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleConfirmOrder = async () => {
     setIsLoading(true);
     try {
       const allItems = Object.values(groupedOrderItems).flat();
-
+  
       if (allItems.length === 0) {
         Alert.alert('Error', 'Please add items to your order');
         return;
       }
-
+  
       const invalidItems = allItems.filter(item => !item.ORDERED_QUANTITY || item.ORDERED_QUANTITY <= 0);
       if (invalidItems.length > 0) {
         Alert.alert('Error', 'Please specify valid quantities for all items');
         return;
       }
-
-      const orderPayload = {
-        CustomerID: route.params?.customerID || "1",
-        items: allItems.map(item => ({
-          LotNo: item.LOT_NO,
-          ItemID: item.ITEM_ID,
-          Quantity: item.ORDERED_QUANTITY
-        }))
-      };
-
-      const response = await axios.post(
-        API_ENDPOINTS.GET_PLACEORDER_DETAILS,
-        orderPayload
-      );
-
-      if (response.data.success) {
-        Alert.alert(
-          'Success',
-          'Order placed successfully! You will receive an email confirmation shortly.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                clearCart();
-                navigation.navigate('BottomTabNavigator', {
-                  shouldRefresh: true,
-                  customerID: String(route.params?.customerID || ''),
-                });
-              }
-            }
-          ]
-        );
-      } else {
-        Alert.alert('Error', response.data.message || 'Failed to place order');
-      }
+  
+      // Navigate to confirmation screen with order items
+      navigation.navigate('OrderConfirmationScreen', {
+        orderItems: allItems,
+        customerID: customerID,        
+      });
+      
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-      Alert.alert('Error', `Failed to place order: ${errorMessage}`);
+      Alert.alert('Error', `Failed to process order: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

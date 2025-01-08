@@ -64,7 +64,7 @@ export type MainStackParamList = {
       ItemID: number;
       LotNo: string;
       Quantity: number;
-      customerID?: number | string;
+      customerID?: string;
       item_name?: string;
       unit_name?: string;
       vakal_no?: string;
@@ -72,7 +72,22 @@ export type MainStackParamList = {
       net_quantity: number;
     }[];
     shouldRefresh: boolean;
-    customerID?: number | string;
+    customerID: string;
+  };
+  OrderConfirmationScreen: {
+    orderItems: Array<{
+      ITEM_ID: number;
+      ITEM_NAME: string;
+      LOT_NO: string;
+      VAKAL_NO: string;
+      ITEM_MARKS: string;
+      UNIT_NAME: string;
+      AVAILABLE_QTY: number;
+      NET_QUANTITY: number;
+      ORDERED_QUANTITY: number;
+    }>;
+    customerID: string;
+     
   };
   SubCategory: {
     category: string;

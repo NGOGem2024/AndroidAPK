@@ -68,6 +68,7 @@ import { NotificationProvider } from './src/contexts/NotificationContext';
 // Types
 import { RootStackParamList, MainStackParamList } from './src/type/type';
 import BottomTabNavigator from './src/components/BottomTabNavigator';
+import OrderConfirmationScreen from './src/screens/OrderConfirmationScreen';
  
 
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -88,6 +89,15 @@ const MainStackNavigator: React.FC = () => {
         component={PlaceOrderScreen}
         options={{ title: "My Orders" }}
       /> 
+
+<MainStack.Screen 
+  name="OrderConfirmationScreen" 
+  component={OrderConfirmationScreen} 
+  options={{
+    title: 'Confirm Order',
+    animation: 'slide_from_right' // This will give you the sliding animation
+  }}
+/>
       <MainStack.Screen
         name="SubCategory"
         component={SubCategory}
