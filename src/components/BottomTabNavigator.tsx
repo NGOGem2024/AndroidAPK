@@ -17,7 +17,7 @@ type TabParamList = {
   Announcement: undefined;
   Report: undefined;
   Alert: undefined;
-  OrderHistory: undefined;
+  OrderHistoryScreen: undefined;
 } & ParamListBase;
 
 // Define the context type
@@ -53,7 +53,7 @@ const BottomTabNavigator: React.FC = () => {
         return 'assessment';
       case 'Alert':
         return focused ? 'notifications' : 'notifications-none';
-      case 'OrderHistory':
+      case 'OrderHistoryScreen':
         return 'history';
       default:
         return 'circle';
@@ -94,8 +94,8 @@ const BottomTabNavigator: React.FC = () => {
         component={AlertScreen} 
       />
       <Tab.Screen
-        name="OrderHistory"
-        component={OrderHistoryScreen}
+        name="OrderHistoryScreen"
+        component={OrderHistoryWrapper}
         options={{
           title: 'Order History',
           headerStyle: { backgroundColor: '#f5f5f5' },

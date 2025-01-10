@@ -5,11 +5,13 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../type/type';
 
 const SplashScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp<RootStackParamList, 'SplashScreen'>>();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate('OtpVerificationScreen');
+      navigation.navigate('OtpVerificationScreen'),{
+         
+      };
     }, 1000); 
 
     return () => clearTimeout(timer);

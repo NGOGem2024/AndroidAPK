@@ -13,11 +13,12 @@ export interface Item {
   quantity?: number;
 }
 
+
 export type RootStackParamList = {
   SplashScreen: undefined;
-  OtpVerificationScreen: {
-    customerID: string;
-  };
+  OtpVerificationScreen: undefined;
+    // customerID?: string | null;
+  
   Main: {
     screen: string;
     params?: {
@@ -51,6 +52,7 @@ export type MainStackParamList = {
     orderNo: string;
     transporterName: string;
     deliveryDate: string;
+    orderDate:string;
     items: Array<{
       ITEM_ID: number;
       LOT_NO: string;

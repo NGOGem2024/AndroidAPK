@@ -156,14 +156,18 @@ const HomeScreen: React.FC = () => {
     }
   }, []);
 
-  const handleCartPress = () => {
-    navigation.navigate('PlaceOrderScreen', {
-      selectedItems: [], // Ensure this matches the defined type
-      shouldRefresh: true,  // or false, depending on your logic
-      customerID: customerID,
-    });
-  };
-
+  const handleCartPress = useCallback(() => {
+    if (CustomerID) {
+      navigation.navigate('PlaceOrderScreen', {
+        selectedItems: [], 
+        shouldRefresh: true,
+        customerID: CustomerID // This must be a string, not null
+      });
+    } else {
+      Alert.alert('Error', 'Customer ID not available');
+    }
+  }, [CustomerID, navigation]);
+  
   const renderCardItem = useCallback(
     ({ item }: { item: CategoryItem }) => {
       return (

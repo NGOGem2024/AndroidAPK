@@ -33,7 +33,7 @@ type OtpVerificationScreenNavigationProp = StackNavigationProp<RootStackParamLis
 type OtpVerificationScreenRouteProp = RouteProp<RootStackParamList, 'OtpVerificationScreen'>;
 
 const OtpVerificationScreen: React.FC<{ route: OtpVerificationScreenRouteProp }> = ({ route }) => {
-  const { customerID } = route.params;
+   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);

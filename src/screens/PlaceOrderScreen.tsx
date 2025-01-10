@@ -59,8 +59,8 @@ const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }
 
   useEffect(() => {
     if (!isInitialized && (selectedItems.length > 0 || cartItems.length > 0)) {
-      const combinedItems: OrderItem[] = [
-        ...(selectedItems || []),
+      const combinedItems = [
+        ...(Array.isArray(selectedItems) ? selectedItems : []),
         ...cartItems.map(cartItem => ({
           LOT_NO: cartItem.lot_no || '',
           ITEM_ID: cartItem.item_id,
@@ -72,9 +72,9 @@ const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }
           NET_QUANTITY: Math.max(0, cartItem.available_qty - cartItem.quantity),
           UPDATED_QTY: [cartItem.quantity],
           ORDERED_QUANTITY: cartItem.quantity
-        } as OrderItem))
-      ];
-
+        }))
+      ] as OrderItem[];  
+      
       const grouped = combinedItems.reduce((acc, item) => {
         if (!acc[item.ITEM_NAME]) {
           acc[item.ITEM_NAME] = [];

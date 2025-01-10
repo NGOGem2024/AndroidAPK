@@ -79,6 +79,7 @@ const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value })
 );
 
 const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigation }) => {
+  
   const { orderId, orderNo, transporterName, deliveryDate, orderDate, items } = route.params;
   const [orderData, setOrderData] = useState<OrderResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -99,7 +100,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
           ID: orderId,
           ORDER_NO: orderNo,
           DELIVERY_DATE: deliveryDate,
-          ORDER_DATE: orderDate,
+          ORDER_DATE: orderDate || new Date().toISOString(), // Add fallback value
           TRANSPORTER_NAME: transporterName,
           STATUS: 'NEW',
           FK_CUSTOMER_ID: 0,

@@ -5,7 +5,7 @@ import { useNotification } from '../contexts/NotificationContext';
 const Alerts = () => {
   const { notifications, clearNotifications } = useNotification();
 
-  const renderNotification = ({ item }) => (
+  const renderNotification = ({ item } : { item: any }) => (
     <View style={styles.notificationItem}>
       <Text style={styles.notificationMessage}>{item.message}</Text>
       <Text style={styles.notificationTimestamp}>{new Date(item.timestamp).toLocaleString()}</Text>
