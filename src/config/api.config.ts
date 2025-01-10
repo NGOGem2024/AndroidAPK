@@ -14,8 +14,8 @@ export const API_ENDPOINTS = {
   ITEM_CATEGORIES: `${API_BASE_URL}/sf/getItemCatSubCat`,
   GET_ITEMS: `${API_BASE_URL}/sf/getItemsBySubCategory`,
   GET_ITEM_DETAILS: `${API_BASE_URL}/sf/getItemDetailswithStock`,
-  GET_PLACEORDER_DETAILS: `${API_BASE_URL}/sf/getItemDetailsAndUpdateStock`,
-  GET_ORDER_HISTORY: `${API_BASE_URL}/sf/getOrderHistory/:CustomerID`,
+  GET_PLACEORDER_DETAILS: `${API_BASE_URL}/sf/placeOrder`,
+  GET_ORDER_HISTORY: `${API_BASE_URL}/sf/getOrderDetailsHistory`,
   // Add other endpoints here
 };
 

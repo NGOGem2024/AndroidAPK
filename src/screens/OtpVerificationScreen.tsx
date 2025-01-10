@@ -1,7 +1,7 @@
  // src/screens/OtpVerificationScreen.tsx
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 import React, { useState } from 'react';
@@ -30,8 +30,10 @@ import { API_ENDPOINTS, DEFAULT_HEADERS } from '../config/api.config';
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type OtpVerificationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'HomeScreen'>;
+type OtpVerificationScreenRouteProp = RouteProp<RootStackParamList, 'OtpVerificationScreen'>;
 
-const OtpVerificationScreen: React.FC = () => {
+const OtpVerificationScreen: React.FC<{ route: OtpVerificationScreenRouteProp }> = ({ route }) => {
+  const { customerID } = route.params;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +53,7 @@ const OtpVerificationScreen: React.FC = () => {
       const response = await axios({
         method: 'post',
         url: API_ENDPOINTS.LOGIN,
+        
         data: {
           sf_userName: username,
           sf_userPwd: password

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -20,9 +20,28 @@ type TabParamList = {
   OrderHistory: undefined;
 } & ParamListBase;
 
+// Define the context type
+interface OrderContextType {
+  orderDetails: any;
+  setOrderDetails: (details: any) => void;
+}
+
+// Create context
+export const OrderContext = createContext<OrderContextType>({
+  orderDetails: null,
+  setOrderDetails: () => {},
+});
+
 const Tab = createBottomTabNavigator<TabParamList>();
 
+// Create a wrapper component for OrderHistoryScreen
+const OrderHistoryWrapper: React.FC = () => {
+  const { orderDetails } = useContext(OrderContext);
+  return <OrderHistoryScreen {...orderDetails} />;
+};
+
 const BottomTabNavigator: React.FC = () => {
+  
   // Helper function to get icon name
   const getIconName = (routeName: string, focused: boolean): string => {
     switch (routeName) {

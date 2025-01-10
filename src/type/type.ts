@@ -36,11 +36,30 @@ export type RootStackParamList = {
 };
 
 export type MainStackParamList = {
-  BottomTabNavigator: {    
-    shouldRefresh: boolean;
-    customerID: string;
+  BottomTabNavigator: {
+    screen: string;
+    params: {
+      screen: string;
+      params: {
+        shouldRefresh: boolean;
+        customerID: string;
+      };
+    };
   };
-  
+ OrderHistoryScreen: {
+    orderId: number;
+    orderNo: string;
+    transporterName: string;
+    deliveryDate: string;
+    items: Array<{
+      ITEM_ID: number;
+      LOT_NO: string;
+      ORDERED_QUANTITY: number;
+      AVAILABLE_QTY: number;
+      ITEM_MARKS: string;
+      VAKAL_NO: string;
+    }>;
+  };
   QuantitySelectorModal: {
     item: {
       item_id: number;
@@ -87,7 +106,7 @@ export type MainStackParamList = {
       ORDERED_QUANTITY: number;
     }>;
     customerID: string;
-     
+      
   };
   SubCategory: {
     category: string;

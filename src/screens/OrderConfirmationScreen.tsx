@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -17,6 +17,7 @@ import { MainStackParamList } from '../../src/type/type';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api.config';
+import { OrderContext } from '../components/BottomTabNavigator';
 
 interface OrderItem {
     ITEM_ID: number;
@@ -30,6 +31,15 @@ interface OrderItem {
     ORDERED_QUANTITY: number;
 }
 
+interface OrderResponse {
+  success: boolean;
+  message: string;
+  data: {
+    orderId: number;
+    orderNo: string;
+  };
+}
+
 type OrderConfirmationScreenRouteProp = RouteProp<MainStackParamList, 'OrderConfirmationScreen'>;
 type OrderConfirmationScreenNavigationProp = StackNavigationProp<MainStackParamList, 'OrderConfirmationScreen'>;
 
@@ -39,6 +49,7 @@ interface OrderConfirmationScreenProps {
 }
 
 const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route, navigation }) => {
+  // const { setOrderDetails } = useContext(OrderContext);
     const { orderItems, customerID } = route.params;
     const [isLoading, setIsLoading] = useState(false);
     const [orderDetails, setOrderDetails] = useState({
@@ -48,69 +59,104 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
       remarks: ""
     });
 
-  const handleSubmitOrder = async () => {
-    if (!orderDetails.deliveryDate || !orderDetails.transporterName) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
-    }
 
-    setIsLoading(true);
-    try {
-      const orderPayload = {
-        CustomerID: customerID, // Using customer_id instead of ORDER_BY
-        items: orderItems.map((item: OrderItem) => ({
-          ItemID: item.ITEM_ID,
-          LotNo: item.LOT_NO,
-          Quantity: item.ORDERED_QUANTITY
-        })),
-        orderDate: orderDetails.orderDate,
-        deliveryDate: orderDetails.deliveryDate,
-        transporterName: orderDetails.transporterName,
-        remarks: orderDetails.remarks,
-      };
+    
+    const handleSubmitOrder = async () => {
+      if (!orderDetails.deliveryDate || !orderDetails.transporterName) {
+        Alert.alert('Error', 'Please fill in all required fields');
+        return;
+      }
+  
+      setIsLoading(true);
+      try {
+        const orderPayload = {
+          CustomerID: customerID,
+          items: orderItems.map((item: OrderItem) => ({
+            ItemID: item.ITEM_ID,
+            LotNo: item.LOT_NO,
+            Quantity: item.ORDERED_QUANTITY
+          })),
+          orderDate: orderDetails.orderDate,
+          deliveryDate: orderDetails.deliveryDate,
+          transporterName: orderDetails.transporterName,
+          remarks: orderDetails.remarks,
+        };
+  
+        const response = await axios.post<OrderResponse>(
+          API_ENDPOINTS.GET_PLACEORDER_DETAILS,
+          orderPayload
+        );
+  
+        if (response.data.success) {
+          const { orderId, orderNo } = response.data.data;
+          
+          // Store order details in global state or async storage
+          const orderDetailsForHistory = {
+            orderId,
+            orderNo,
+            transporterName: orderDetails.transporterName,
+            deliveryDate: orderDetails.deliveryDate,
+            orderDate: orderDetails.orderDate,
+            items: orderItems.map(item => ({
+              ...item,
+              ID: Date.now(), // Temporary ID for display
+              FK_ORDER_ID: orderId,
+              FK_ITEM_ID: item.ITEM_ID,
+              LOT_NO: item.LOT_NO,
+              REQUESTED_QTY: item.ORDERED_QUANTITY,
+              AVAILABLE_QTY: item.AVAILABLE_QTY,
+              STATUS: 'NEW',
+              ITEM_MARKS: item.ITEM_MARKS || '',
+              VAKAL_NO: item.VAKAL_NO || '',
+              MARK: item.ITEM_MARKS || '',
+              REMARK: orderDetails.remarks
+            }))
+          };
+          
 
-      const response = await axios.post(
-        API_ENDPOINTS.GET_PLACEORDER_DETAILS,
-        orderPayload
-      );
-
-      if (response.data.success) {
-        Alert.alert(
-          'Success',
-          `Order ${response.data.orderNo} placed successfully! You will receive an email confirmation shortly.`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
+          console.log('Order Details being passed:', JSON.stringify(orderDetailsForHistory, null, 2)); // Add this log
+          // You can use AsyncStorage or your state management solution here
+          // Example with AsyncStorage:
+          // await AsyncStorage.setItem(`ORDER_${orderId}`, JSON.stringify(orderDetailsToStore));
+          
+          Alert.alert(
+            'Success',
+            `Order ${orderNo} placed successfully!`,
+            [
+              {
+                text: 'View Order',
+                onPress: () => {
+                  navigation.navigate('OrderHistoryScreen', orderDetailsForHistory);
+                }
+              },
+              {
+                text: 'Back to Home',
+                onPress: () => {
+                  // Reset navigation stack and set initial params for the bottom tab
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ 
                       name: 'BottomTabNavigator',
                       params: {
-                        screen: 'Home',
-                        params: {
-                          shouldRefresh: true,
-                          customerID: String(customerID),
-                        },
-                      },
-                    },
-                  ],
-                });
+                        screen: 'Home',  // Specify the initial tab
+                        params: orderDetailsForHistory
+                      }
+                    }],
+                  });
+                }
               }
-            }
-          ]
-        );
-      } else {
-        Alert.alert('Error', response.data.message || 'Failed to place order');
+            ]
+          );
+        } else {
+          Alert.alert('Error', response.data.message || 'Failed to place order');
+        }
+      } catch (error: any) {
+        const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+        Alert.alert('Error', `Failed to place order: ${errorMessage}`);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-      Alert.alert('Error', `Failed to place order: ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
   return (
     <SafeAreaView style={styles.safeArea}>

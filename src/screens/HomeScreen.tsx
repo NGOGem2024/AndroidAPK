@@ -68,7 +68,6 @@ const HomeScreen: React.FC = () => {
   }, []);
 
    
-
   const fetchCustomerID = useCallback(async () => {
     try {
       const storedId = await AsyncStorage.getItem('customerID');
@@ -158,7 +157,11 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const handleCartPress = () => {
-    navigation.navigate('PlaceOrderScreen');
+    navigation.navigate('PlaceOrderScreen', {
+      selectedItems: [], // Ensure this matches the defined type
+      shouldRefresh: true,  // or false, depending on your logic
+      customerID: customerID,
+    });
   };
 
   const renderCardItem = useCallback(

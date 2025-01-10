@@ -69,6 +69,7 @@ import { NotificationProvider } from './src/contexts/NotificationContext';
 import { RootStackParamList, MainStackParamList } from './src/type/type';
 import BottomTabNavigator from './src/components/BottomTabNavigator';
 import OrderConfirmationScreen from './src/screens/OrderConfirmationScreen';
+import OrderHistoryScreen from './src/screens/OrderHistoryScreen';
  
 
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -123,6 +124,11 @@ const MainStackNavigator: React.FC = () => {
         name="LotReportScreen"
         component={LotReportScreen}
         options={{ title: "Lot Report" }}
+      />
+       <MainStack.Screen
+        name="OrderHistoryScreen"
+        component={OrderHistoryScreen}
+        options={{ title: "OrderHistoryScreen" }}
       />
       <MainStack.Screen
         name="QuantitySelectorModal"
