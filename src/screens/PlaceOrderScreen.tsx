@@ -51,6 +51,7 @@ interface PlaceOrderScreenProps {
 }
 
 const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }) => {
+   
   const { selectedItems , customerID , shouldRefresh} = route.params || { selectedItems: [] };
   const { cartItems, clearCart, removeCartItem } = useCart();
   const [groupedOrderItems, setGroupedOrderItems] = useState<GroupedItems>({});
@@ -219,6 +220,11 @@ const PlaceOrderScreen: React.FC<PlaceOrderScreenProps> = ({ route, navigation }
         return;
       }
   
+      if (clearCart) {
+        clearCart();
+      }
+ 
+
       // Navigate to confirmation screen with order items
       navigation.navigate('OrderConfirmationScreen', {
         orderItems: allItems,

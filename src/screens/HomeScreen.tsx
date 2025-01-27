@@ -58,7 +58,7 @@ const HomeScreen: React.FC = () => {
     subcategories: ImageMapping[];
   }>({ categories: [], subcategories: [] });
 
-  const { cartItems } = useCart() || {};
+  const { cartItems , clearCart } = useCart() || {};
   const cartItemCount = cartItems?.length || 0;
 
   const handleAccountSwitch = useCallback(() => {

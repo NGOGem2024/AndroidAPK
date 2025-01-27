@@ -1,6 +1,7 @@
  // src/types/types.ts
 
 import type { StackScreenProps } from '@react-navigation/stack';
+// import { OrderContext } from '../contexts/orderContext';
 
 export interface Item {
   ITEM_ID: number;
@@ -108,8 +109,8 @@ export type MainStackParamList = {
       ORDERED_QUANTITY: number;
     }>;
     customerID: string;
-      
   };
+
   SubCategory: {
     category: string;
     categoryId: string;
