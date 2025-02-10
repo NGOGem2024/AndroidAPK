@@ -2,13 +2,13 @@
 export const CATEGORY_IMAGE_PATHS = {
   
     'C6': require('../assets/images/categories/C6.jpg'), //Natural Herb
-    'C7': require('../assets/images/categories/C7.jpg'), //fresh fruit
-    'C10': require('../assets/images/categories/C10.jpg'), //vegetable
+    'C7': require('../assets/images/categories/C7.webp'), //fresh fruit
+    'C10': require('../assets/images/categories/C10.webp'), //vegetable
     'C11': require('../assets/images/categories/C11.jpg'), //pharma
-    'C12': require('../assets/images/categories/C12.jpg'), //spices
+    'C12': require('../assets/images/categories/C12.webp'), //spices
     //'C13': require('../assets/images/categories/C13.jpg'), //Accessories
     'C14': require('../assets/images/categories/C14.jpg'), //grain
-    'C15': require('../assets/images/categories/C15.jpg'), //Bazra Crispies
+    'C15': require('../assets/images/categories/C15.webp'), //Bazra Crispies
     'C1': require('../assets/images/categories/C1.jpg'), //DryFruit
     'C2': require('../assets/images/categories/C2.jpg'), //Process Food
     'C8': require('../assets/images/categories/C8.jpg'), //frozen
@@ -29,7 +29,7 @@ export const SUBCATEGORY_IMAGE_PATHS = {
   'SC10': require('../assets/images/subcategories/SC10.jpg'),
   'SC11': require('../assets/images/subcategories/SC11.jpg'),
   'SC12': require('../assets/images/subcategories/SC12.jpg'),
-  'SC13': require('../assets/images/subcategories/SC13.jpg'),
+  'SC13': require('../assets/images/subcategories/SC13.webp'),
   'SC14': require('../assets/images/subcategories/SC14.jpg'),
   'SC15': require('../assets/images/subcategories/SC15.jpg'),
   'SC16': require('../assets/images/subcategories/SC16.jpg'),

@@ -1,8 +1,8 @@
  // src/config/api.config.ts
 
-// Replace with your computer's IP address (e.g., 192.168.1.100)
-const YOUR_COMPUTER_IP = '192.168.1.37';  
-const PORT = '3000';
+ 
+const YOUR_COMPUTER_IP = '202.189.234.140';  
+const PORT = '5000';
 
 export const API_BASE_URL = `http://${YOUR_COMPUTER_IP}:${PORT}`;
 
@@ -15,8 +15,8 @@ export const API_ENDPOINTS = {
   GET_ITEMS: `${API_BASE_URL}/sf/getItemsBySubCategory`,
   GET_ITEM_DETAILS: `${API_BASE_URL}/sf/getItemDetailswithStock`,
   GET_PLACEORDER_DETAILS: `${API_BASE_URL}/sf/placeOrder`,
-  GET_ORDER_HISTORY: `${API_BASE_URL}/sf/getOrderDetailsHistory`,
-  // Add other endpoints here
+  GET_ORDER_HISTORY: `${API_BASE_URL}/sf/getOrderHistory`,
+   
 };
 
 

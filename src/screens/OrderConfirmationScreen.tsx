@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,26 +9,26 @@ import {
   View,
   Alert,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from '../../src/type/type';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {MainStackParamList} from '../../src/type/type';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api.config';
-import { OrderContext } from '../components/BottomTabNavigator';
+import {API_ENDPOINTS} from '../config/api.config';
 
 interface OrderItem {
-    ITEM_ID: number;
-    ITEM_NAME: string;
-    LOT_NO: string;
-    VAKAL_NO: string;
-    ITEM_MARKS: string;
-    UNIT_NAME: string;
-    AVAILABLE_QTY: number;
-    NET_QUANTITY: number;
-    ORDERED_QUANTITY: number;
+  ITEM_ID: number;
+  ITEM_NAME: string;
+  LOT_NO: string;
+  VAKAL_NO: string;
+  ITEM_MARKS: string;
+  UNIT_NAME: string;
+  AVAILABLE_QTY: number;
+  NET_QUANTITY: number;
+  ORDERED_QUANTITY: number;
+  BatchNo?: string | null;
 }
 
 interface OrderResponse {
@@ -37,133 +37,177 @@ interface OrderResponse {
   data: {
     orderId: number;
     orderNo: string;
+    customerAddressId: number;
   };
 }
 
-type OrderConfirmationScreenRouteProp = RouteProp<MainStackParamList, 'OrderConfirmationScreen'>;
-type OrderConfirmationScreenNavigationProp = StackNavigationProp<MainStackParamList, 'OrderConfirmationScreen'>;
+type OrderConfirmationScreenRouteProp = RouteProp<
+  MainStackParamList,
+  'OrderConfirmationScreen'
+>;
+type OrderConfirmationScreenNavigationProp = StackNavigationProp<
+  MainStackParamList,
+  'OrderConfirmationScreen'
+>;
 
 interface OrderConfirmationScreenProps {
   route: OrderConfirmationScreenRouteProp;
   navigation: OrderConfirmationScreenNavigationProp;
 }
 
-const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route, navigation }) => {
-  // const { setOrderDetails } = useContext(OrderContext);
-    const { orderItems, customerID } = route.params;
-    const [isLoading, setIsLoading] = useState(false);
-    const [orderDetails, setOrderDetails] = useState({
-      orderDate: new Date().toISOString().split('T')[0],
-      deliveryDate: new Date().toISOString().split('T')[0],
-      transporterName: "",
-      remarks: ""
-    });
+const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
+  route,
+  navigation,
+}) => {
+  const {
+    orderItems,
+    customerID,
+    userSupervisorId,
+    userMukadamId,
+    stockLotLocationId, // This comes in as a number or string
+    unitId = 3,
+    finYearId = 15,
+  } = route.params;
 
+  // Local state for order details.
+  const [orderDetails, setOrderDetails] = useState({
+    orderDate: new Date().toISOString().split('T')[0],
+    deliveryDate: new Date().toISOString().split('T')[0],
+    transporterName: '',
+    remarks: '',
+  });
 
-    
-    const handleSubmitOrder = async () => {
-      if (!orderDetails.deliveryDate || !orderDetails.transporterName) {
-        Alert.alert('Error', 'Please fill in all required fields');
-        return;
+  // Create a state for the Stock Lot Location ID.
+  // Convert to string if needed so the TextInput receives a string.
+  const [editableStockLotLocationId, setEditableStockLotLocationId] = useState(
+    stockLotLocationId ? stockLotLocationId.toString() : '',
+  );
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmitOrder = async () => {
+    if (!orderDetails.deliveryDate || !orderDetails.transporterName) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const orderPayload = {
+        CustomerID: customerID,
+        items: orderItems.map((item: OrderItem) => ({
+          ItemID: item.ITEM_ID,
+          LotNo: item.LOT_NO,
+          Quantity: item.ORDERED_QUANTITY,
+          BatchNo: item.BatchNo === '**null**' ? null : item.BatchNo,
+          ItemMarks: item.ITEM_MARKS || '',
+          VakalNo: item.VAKAL_NO || '',
+        })),
+        orderDate: orderDetails.orderDate,
+        deliveryDate: orderDetails.deliveryDate,
+        transporterName: orderDetails.transporterName,
+        remarks: orderDetails.remarks,
+        userSupervisorId: null,
+        userMukadamId: null,
+        // Use the editable field from state (convert back to number if necessary)
+        stockLotLocationId: editableStockLotLocationId,
+        unitId,
+        finYearId,
+        orderMode: 'APP',
+      };
+
+      console.log(
+        'Sending order payload:',
+        JSON.stringify(orderPayload, null, 2),
+      );
+      const response = await axios.post<OrderResponse>(
+        API_ENDPOINTS.GET_PLACEORDER_DETAILS,
+        orderPayload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          timeout: 10000, // 10-second timeout
+        },
+      );
+
+      console.log('Server response:', JSON.stringify(response.data, null, 2));
+      if (!response || !response.data) {
+        throw new Error('No response received from server');
       }
-  
-      setIsLoading(true);
-      try {
-        const orderPayload = {
-          CustomerID: customerID,
-          items: orderItems.map((item: OrderItem) => ({
-            ItemID: item.ITEM_ID,
-            LotNo: item.LOT_NO,
-            Quantity: item.ORDERED_QUANTITY
-          })),
-          orderDate: orderDetails.orderDate,
-          deliveryDate: orderDetails.deliveryDate,
-          transporterName: orderDetails.transporterName,
-          remarks: orderDetails.remarks,
-        };
-  
-        const response = await axios.post<OrderResponse>(
-          API_ENDPOINTS.GET_PLACEORDER_DETAILS,
-          orderPayload
-        );
-  
-        if (response.data.success) {
-          const { orderId, orderNo } = response.data.data;
-          
-          // Store order details in global state or async storage
-          const orderDetailsForHistory = {
-            orderId,
-            orderNo,
-            transporterName: orderDetails.transporterName,
-            deliveryDate: orderDetails.deliveryDate,
-            orderDate: orderDetails.orderDate,
-            items: orderItems.map(item => ({
-              ...item,
-              ID: Date.now(), // Temporary ID for display
-              FK_ORDER_ID: orderId,
-              FK_ITEM_ID: item.ITEM_ID,
-              LOT_NO: item.LOT_NO,
-              REQUESTED_QTY: item.ORDERED_QUANTITY,
-              AVAILABLE_QTY: item.AVAILABLE_QTY,
-              STATUS: 'NEW',
-              ITEM_MARKS: item.ITEM_MARKS || '',
-              VAKAL_NO: item.VAKAL_NO || '',
-              MARK: item.ITEM_MARKS || '',
-              REMARK: orderDetails.remarks
-            }))
-          };
-          
 
-          console.log('Order Details being passed:', JSON.stringify(orderDetailsForHistory, null, 2)); // Add this log
-          // You can use AsyncStorage or your state management solution here
-          // Example with AsyncStorage:
-          // await AsyncStorage.setItem(`ORDER_${orderId}`, JSON.stringify(orderDetailsToStore));
-          
-          Alert.alert(
-            'Success',
-            `Order ${orderNo} placed successfully!`,
-            [
-              {
-                text: 'View Order',
-                onPress: () => {
-                  navigation.navigate('OrderHistoryScreen', orderDetailsForHistory);
-                }
+      if (response.data.success === true) {
+        const {orderId, orderNo} = response.data.data;
+
+        if (!orderId || !orderNo) {
+          throw new Error('Missing order details in success response');
+        }
+
+        const processedItems = orderItems.map(item => ({
+          ...item,
+          FK_ORDER_ID: orderId,
+          FK_ITEM_ID: item.ITEM_ID,
+          STATUS: 'NEW',
+          REMARK: orderDetails.remarks,
+        }));
+
+        Alert.alert(
+          'SuccesFs',
+          `Order ${orderNo} placed successfully!`,
+          [
+            {
+              text: 'View Order',
+              onPress: () => {
+                navigation.navigate('OrderHistoryScreen', {
+                  orderId,
+                  orderNo,
+                  transporterName: orderDetails.transporterName,
+                  deliveryDate: orderDetails.deliveryDate,
+                  orderDate: orderDetails.orderDate,
+                  items: processedItems,
+                });
               },
-              {
-                text: 'Back to Home',
-                onPress: () => {
-                  // Reset navigation stack and set initial params for the bottom tab
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ 
+            },
+            {
+              text: 'Back to Home',
+              onPress: () => {
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
                       name: 'BottomTabNavigator',
                       params: {
-                        screen: 'Home',  // Specify the initial tab
-                        params: orderDetailsForHistory
-                      }
-                    }],
-                  });
-                }
-              }
-            ]
-          );
-        } else {
-          Alert.alert('Error', response.data.message || 'Failed to place order');
-        }
-      } catch (error: any) {
-        const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-        Alert.alert('Error', `Failed to place order: ${errorMessage}`);
-      } finally {
-        setIsLoading(false);
+                        screen: 'Home',
+                      },
+                    },
+                  ],
+                });
+              },
+            },
+          ],
+          {
+            cancelable: false,
+          },
+        );
+      } else {
+        throw new Error(
+          response.data.message || 'Server returned unsuccessful response',
+        );
       }
-    };
+    } catch (error: any) {
+      console.error('Error submitting order:', error.message);
+      Alert.alert('Error', error.message || 'Failed to place order');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mainContainer}>
         <ScrollView style={styles.scrollContainer}>
           <Text style={styles.headerText}>Order Confirmation</Text>
-          
+
           <View style={styles.cardContainer}>
             <View style={styles.field}>
               <Text style={styles.fieldLabel}>Order Date</Text>
@@ -179,7 +223,9 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
               <TextInput
                 style={styles.fieldInput}
                 value={orderDetails.deliveryDate}
-                onChangeText={(text) => setOrderDetails(prev => ({ ...prev, deliveryDate: text }))}
+                onChangeText={text =>
+                  setOrderDetails(prev => ({...prev, deliveryDate: text}))
+                }
                 placeholder="YYYY-MM-DD"
               />
             </View>
@@ -189,8 +235,21 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
               <TextInput
                 style={styles.fieldInput}
                 value={orderDetails.transporterName}
-                onChangeText={(text) => setOrderDetails(prev => ({ ...prev, transporterName: text }))}
+                onChangeText={text =>
+                  setOrderDetails(prev => ({...prev, transporterName: text}))
+                }
                 placeholder="Enter transporter name"
+              />
+            </View>
+
+            {/* Editable Stock Lot Location ID Field */}
+            <View style={styles.field}>
+              <Text style={styles.fieldLabel}>Stock Lot Location ID</Text>
+              <TextInput
+                style={styles.fieldInput}
+                value={editableStockLotLocationId}
+                onChangeText={setEditableStockLotLocationId}
+                placeholder="Enter Stock Lot Location ID"
               />
             </View>
 
@@ -199,7 +258,9 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
               <TextInput
                 style={[styles.fieldInput, styles.remarksInput]}
                 value={orderDetails.remarks}
-                onChangeText={(text) => setOrderDetails(prev => ({ ...prev, remarks: text }))}
+                onChangeText={text =>
+                  setOrderDetails(prev => ({...prev, remarks: text}))
+                }
                 placeholder="Add any special instructions"
                 multiline
                 numberOfLines={3}
@@ -211,8 +272,12 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
             <Text style={styles.summaryTitle}>Order Summary</Text>
             {orderItems.map((item: OrderItem, index: number) => (
               <View key={index} style={styles.itemRow}>
-                <Text style={styles.itemName}>{item.ITEM_NAME || `Item ${item.ITEM_ID}`}</Text>
-                <Text style={styles.itemQuantity}>Qty: {item.ORDERED_QUANTITY}</Text>
+                <Text style={styles.itemName}>
+                  {item.ITEM_NAME || `Item ${item.ITEM_ID}`}
+                </Text>
+                <Text style={styles.itemQuantity}>
+                  Qty: {item.ORDERED_QUANTITY}
+                </Text>
               </View>
             ))}
           </View>
@@ -222,8 +287,7 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
           <TouchableOpacity
             style={[styles.submitButton, isLoading && styles.disabledButton]}
             onPress={handleSubmitOrder}
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             {isLoading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator color="#FFFFFF" />
@@ -232,7 +296,11 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({ route
             ) : (
               <>
                 <Text style={styles.buttonText}>Confirm Order</Text>
-                <Ionicons name="checkmark-circle-outline" size={24} color="#FFFFFF" />
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={24}
+                  color="#FFFFFF"
+                />
               </>
             )}
           </TouchableOpacity>
@@ -270,7 +338,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {width: 0, height: 2},
         shadowOpacity: 0.1,
         shadowRadius: 4,
       },

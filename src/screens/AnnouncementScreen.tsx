@@ -24,7 +24,7 @@ const Announcement = () => {
       <View style={styles.announcementBox}>
         <View style={styles.imageContainer}>
           <Animated.Image
-            source={require('../assets/wish/durga.png')}
+            source={require('../assets/wish/durga.jpg')}
             style={[
               styles.slidingImage,
               {

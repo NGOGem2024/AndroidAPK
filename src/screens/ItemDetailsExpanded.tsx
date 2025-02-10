@@ -300,7 +300,7 @@ const ItemDetailsExpanded: React.FC<ItemDetailsExpandedProps> = ({ route, naviga
                             <Text style={styles.lotNoLabel}>LOT NO : </Text>
                             <TouchableOpacity
                                 style={styles.lotNoValueContainer}
-                                onPress={() => navigation.navigate('LotReportScreen')}
+                                // onPress={() => navigation.navigate('LotReportScreen')}
                             >
                                 <Text style={styles.lotNoValue}>{stock.LOT_NO || "N/A"}</Text>
                             </TouchableOpacity>
@@ -472,12 +472,12 @@ const ItemDetailsExpanded: React.FC<ItemDetailsExpandedProps> = ({ route, naviga
         return (
             <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>{error}</Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.retryButton}
                     onPress={() => fetchStockDetails()}
                 >
                     <Text style={styles.retryButtonText}>Retry</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         );
     }

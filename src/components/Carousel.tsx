@@ -5,8 +5,8 @@ const { width } = Dimensions.get('window');
 
 // For React Native CLI, you'll need to manually link these assets
 const carouselData = [
-  { id: '3', image: require('../assets/Carousel/c5.png') },
-  { id: '1', image: require('../assets/Carousel/c4.png') },
+  { id: '3', image: require('../assets/Carousel/c5.jpg') },
+  { id: '1', image: require('../assets/Carousel/c4.jpg') },
   { id: '2', image: require('../assets/Carousel/s3.png') },
 ];
 

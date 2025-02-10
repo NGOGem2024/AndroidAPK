@@ -121,6 +121,7 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
         navigation.navigate('PlaceOrderScreen', {
           selectedItems: [], // Pass relevant parameters as needed
           customerID: item.customerID,
+          
         });
       };
     

@@ -49,6 +49,7 @@ export type MainStackParamList = {
     };
   };
  OrderHistoryScreen: {
+  customerID:string;
     orderId: number;
     orderNo: string;
     transporterName: string;
@@ -93,6 +94,11 @@ export type MainStackParamList = {
       item_marks?: string;
       net_quantity: number;
     }[];
+    userSupervisorId?: number;
+    userMukadamId?: number;
+    stockLotLocationId?: number;
+    unitId?: number;
+    finYearId?: number;
     shouldRefresh: boolean;
     customerID: string;
   };
@@ -108,7 +114,13 @@ export type MainStackParamList = {
       NET_QUANTITY: number;
       ORDERED_QUANTITY: number;
     }>;
+     
     customerID: string;
+    userSupervisorId?: number;
+    userMukadamId?: number;
+    stockLotLocationId?: number;
+    unitId?: number;
+    finYearId?: number;
   };
 
   SubCategory: {
