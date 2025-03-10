@@ -40,6 +40,7 @@ export type RootStackParamList = {
 export type MainStackParamList = {
   BottomTabNavigator: {
     screen: string;
+    customerID: string;
     params: {
       screen: string;
       params: {
@@ -164,3 +165,12 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> = StackScre
   RootStackParamList,
   T
 >;
+
+export type SearchType = 'searchCategories' | 'searchItemsAndSubCategories' | 'searchByLotNumber';
+
+export interface SearchData {
+  searchType: SearchType;
+  searchQuery: string;
+}
+
+

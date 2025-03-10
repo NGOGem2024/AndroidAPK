@@ -188,7 +188,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ displayName, onAccountSwitch 
   return (
     <>
       <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
-        <Icon name="account-circle" size={28} color="#007BFA" />
+        <Icon name="account-circle" size={28} style={{color:"#007BFA"}} />
       </TouchableOpacity>
 
       <Modal
@@ -205,7 +205,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ displayName, onAccountSwitch 
           <View style={styles.menuContainer}>
             <TouchableOpacity activeOpacity={1}>
               <View style={styles.profileHeader}>
-                <Icon name="account-circle" size={80} color="#007BFA" />
+                <Icon name="account-circle" size={80} style={{color:"#007BFA"}} />
                 <Text style={styles.displayName}>{displayName || "User"}</Text>
                 <View style={styles.divider} />
               </View>
@@ -217,15 +217,15 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ displayName, onAccountSwitch 
                   setShowSwitchModal(true);
                 }}
               >
-                <Icon name="swap-horiz" size={24} color="#333" />
+                <Icon name="swap-horiz" size={24} style={{color:"#333"}} />
                 <Text style={styles.menuText}>Switch Account</Text>
-                <Icon name="chevron-right" size={24} color="#666" />
+                <Icon name="chevron-right" size={24} style={{color:"#666"}} />
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-                <Icon name="logout" size={24} color="#333" />
+                <Icon name="logout" size={24} style={{color:"#333"}} />
                 <Text style={styles.menuText}>Logout</Text>
-                <Icon name="chevron-right" size={24} color="#666" />
+                <Icon name="chevron-right" size={24} style={{color:"#666"}} />
               </TouchableOpacity>
             </TouchableOpacity>
           </View>

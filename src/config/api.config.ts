@@ -1,7 +1,7 @@
- // src/config/api.config.ts
-
- 
+ // src/config/api.config
+   
 const YOUR_COMPUTER_IP = '202.189.234.140';  
+// const YOUR_COMPUTER_IP = '192.168.1.37'; 
 const PORT = '5000';
 
 export const API_BASE_URL = `http://${YOUR_COMPUTER_IP}:${PORT}`;
@@ -16,7 +16,10 @@ export const API_ENDPOINTS = {
   GET_ITEM_DETAILS: `${API_BASE_URL}/sf/getItemDetailswithStock`,
   GET_PLACEORDER_DETAILS: `${API_BASE_URL}/sf/placeOrder`,
   GET_ORDER_HISTORY: `${API_BASE_URL}/sf/getOrderHistory`,
-   
+  SEARCH_STOCK_ITEMS: `${API_BASE_URL}/sf/searchStockItems`,
+  SEARCH_STOCK_SUBCATEGORIES: `${API_BASE_URL}/search/searchItemsAndSubCategories`,
+  SEARCH_STOCK_CATEGORIES: `${API_BASE_URL}/search/searchCategories`,
+  SEARCH_BY_LOT_NUMBER: `${API_BASE_URL}/search/searchByLotNumber`,
 };
 
 

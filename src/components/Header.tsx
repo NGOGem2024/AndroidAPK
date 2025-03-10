@@ -1,17 +1,18 @@
 import React from 'react';
-import { 
-  Dimensions, 
-  Image, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View 
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 // Import Icons from react-native-vector-icons instead of Expo
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ProfileMenu from '../screens/ProfileMenu';
+import {useNavigation} from '@react-navigation/native';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 type HeaderProps = {
   displayName: string | null;
@@ -20,34 +21,37 @@ type HeaderProps = {
   onCartPress?: () => void;
 };
 
-const Header: React.FC<HeaderProps> = ({ 
-  displayName, 
-  cartItemCount, 
-  onAccountSwitch, 
-  onCartPress 
+const Header: React.FC<HeaderProps> = ({
+  displayName,
+  cartItemCount,
+  onAccountSwitch,
+  onCartPress,
 }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.header}>
-      <View style={styles.leftSection}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.leftSection}>
         <Image
           source={require('../assets/SavlaLogo.jpg')}
           style={styles.logo}
         />
-      </View>
-      
+      </TouchableOpacity>
+
       <View style={styles.centerSection}>
-        <Text style={styles.headerTitle}>
-          {displayName || "Loading..."}
-        </Text>
+        <Text style={styles.headerTitle}>{displayName || 'Loading...'}</Text>
       </View>
-      
+
       <View style={styles.rightSection}>
-        <TouchableOpacity
-          onPress={onCartPress}
-          style={styles.iconButton}
-        >
+        <TouchableOpacity onPress={onCartPress} style={styles.iconButton}>
           <View style={styles.iconContainer}>
-            <Icon name="shopping-cart" size={25} color="#007BFA" />
+            <Icon
+              name="shopping-cart"
+              size={25}
+              color="#007BFA"
+              style={{fontFamily: 'MaterialIcons'}}
+            />
             {cartItemCount > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>{cartItemCount}</Text>
@@ -63,7 +67,10 @@ const Header: React.FC<HeaderProps> = ({
           <Icon name="person" size={25} color="#007BFA" />
         </TouchableOpacity> */}
 
-        <ProfileMenu displayName={displayName} onAccountSwitch={onAccountSwitch} />
+        <ProfileMenu
+          displayName={displayName}
+          onAccountSwitch={onAccountSwitch}
+        />
       </View>
     </View>
   );
@@ -71,13 +78,13 @@ const Header: React.FC<HeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
+    flexDirection: 'row',
+    backgroundColor: '#fff',
     height: 65,
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: '#eee',
   },
   leftSection: {
     width: 45,
@@ -104,9 +111,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 16,
-    color: "#007BFA",
-    fontWeight: "bold",
-    textAlign: "center",
+    color: '#007BFA',
+    fontWeight: 'bold',
+    textAlign: 'center',
     maxWidth: width - 200,
   },
   iconButton: {
@@ -122,21 +129,21 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   cartBadge: {
-    position: "absolute",
+    position: 'absolute',
     right: -4,
     top: -4,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     borderRadius: 25,
     minWidth: 20,
     height: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 4,
   },
   cartBadgeText: {
-    color: "white",
+    color: 'white',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

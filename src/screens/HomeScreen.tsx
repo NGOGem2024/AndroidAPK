@@ -24,6 +24,8 @@ import Carousel from '../components/Carousel';
 import Header from '../components/Header';
 import { useCart } from '../contexts/CartContext';
 import { useDisplayName } from '../contexts/DisplayNameContext';
+import {LayoutWrapper} from '../components/AppLayout';
+// import { TabBar } from '../components/BottomTabNavigator';
 
 interface HomeScreenParams {
   initialLogin?: boolean;
@@ -258,23 +260,21 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ddd" />
-      <Header 
-        displayName={displayName}
-        cartItemCount={cartItemCount}
-        onCartPress={handleCartPress}
-        onAccountSwitch={handleAccountSwitch}
-      />
+    <LayoutWrapper
+      onCartPress={handleCartPress}
+      onAccountSwitch={handleAccountSwitch}
+      showTabBar={false}
+      route={route}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
+          placeholderTextColor={'#000'}
           value={searchQuery}
           onChangeText={handleSearch}
         />
         <TouchableOpacity style={styles.searchButton}>
-          <Icon name="search" size={24} color="#000" />
+          <Icon name="search" size={24} style={{color:"#000"}} />
         </TouchableOpacity>
       </View>
 
@@ -293,11 +293,19 @@ const HomeScreen: React.FC = () => {
         data={showAllCards ? filteredCategories : filteredCategories.slice(0, 6)}
         renderItem={renderCardItem}
         numColumns={2}
+
         keyExtractor={(item) => item.CATID}
-        contentContainerStyle={styles.cardContainer}
+        contentContainerStyle={[styles.cardContainer,
+          filteredCategories.length === 0 && styles.emptyContainer,
+        ]}
         scrollEnabled={true}
+        ListEmptyComponent={
+          <View>
+            <Text>No Categories Found</Text>
+          </View>
+        }
       />
-    </SafeAreaView>
+    </LayoutWrapper>
   );
 };
 
@@ -310,6 +318,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     marginBottom: 0,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   searchInput: {
     flex: 1,

@@ -1,8 +1,9 @@
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {LayoutWrapper} from '../components/AppLayout';
 import {
   ActivityIndicator,
   Alert,
@@ -15,11 +16,17 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { fetchImageMappings, formatImageName, getSubcategoryImage, ImageMapping } from '../utils/imageRegistry';
-import { API_BASE_URL } from "../config/api.config";
- 
+import {
+  fetchImageMappings,
+  formatImageName,
+  getSubcategoryImage,
+  ImageMapping,
+} from '../utils/imageRegistry';
+import {API_BASE_URL} from '../config/api.config';
+
+
 type MainStackParamList = {
   SubCategory: {
     category: string;
@@ -50,14 +57,16 @@ type NavigationProp = {
   navigate: (screen: string, params: any) => void;
 };
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const SubCategory: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<SubCategoryScreenRouteProp>();
   const [CustomerID, setCustomerID] = useState<string | null>(null);
   const [subCategories, setSubCategories] = useState<SubCategoryItem[]>([]);
-  const [filteredSubCategories, setFilteredSubCategories] = useState<SubCategoryItem[]>([]);
+  const [filteredSubCategories, setFilteredSubCategories] = useState<
+    SubCategoryItem[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +74,7 @@ const SubCategory: React.FC = () => {
   const [imageMappings, setImageMappings] = useState<{
     categories: ImageMapping[];
     subcategories: ImageMapping[];
-  }>({ categories: [], subcategories: [] });
+  }>({categories: [], subcategories: []});
 
   useEffect(() => {
     const loadImageMappings = async () => {
@@ -78,7 +87,7 @@ const SubCategory: React.FC = () => {
   useEffect(() => {
     const fetchCustomerID = async () => {
       try {
-        let id = await AsyncStorage.getItem("customerID");
+        let id = await AsyncStorage.getItem('customerID');
         if (id) {
           setCustomerID(id);
         } else {
@@ -86,12 +95,12 @@ const SubCategory: React.FC = () => {
           id = response.data.customerID;
           if (id) {
             setCustomerID(id);
-            await AsyncStorage.setItem("customerID", id);
+            await AsyncStorage.setItem('customerID', id);
           }
         }
       } catch (error) {
-        console.error("Error fetching CustomerID:", error);
-        setError("Failed to fetch Customer ID");
+        console.error('Error fetching CustomerID:', error);
+        setError('Failed to fetch Customer ID');
       }
     };
 
@@ -106,7 +115,7 @@ const SubCategory: React.FC = () => {
 
   const fetchSubCategories = useCallback(async () => {
     if (!CustomerID || !route.params.categoryId) {
-      console.log("Waiting for CustomerID or categoryId...");
+      console.log('Waiting for CustomerID or categoryId...');
       return;
     }
 
@@ -117,24 +126,26 @@ const SubCategory: React.FC = () => {
       const response = await axios.post(
         `${API_BASE_URL}/sf/getItemCatSubCat`,
         {
-          CustomerID: CustomerID
+          CustomerID: CustomerID,
         },
         {
-          timeout: 10000
-        }
+          timeout: 10000,
+        },
       );
 
       if (response.data && response.data.output) {
-        const filteredSubCategories = response.data.output.filter((item: SubCategoryItem) =>
-          item.CATID === route.params.categoryId
+        const filteredSubCategories = response.data.output.filter(
+          (item: SubCategoryItem) => item.CATID === route.params.categoryId,
         );
 
-        const uniqueSubCategories = filteredSubCategories.map((item: SubCategoryItem) => ({
-          ...item,
-          CustomerID: CustomerID || '',
-          subcategoryImage: formatImageName(item.SUBCATID, false),
-          imageUrl: getSubcategoryImage(item.SUBCATID)
-        }));
+        const uniqueSubCategories = filteredSubCategories.map(
+          (item: SubCategoryItem) => ({
+            ...item,
+            CustomerID: CustomerID || '',
+            subcategoryImage: formatImageName(item.SUBCATID, false),
+            imageUrl: getSubcategoryImage(item.SUBCATID),
+          }),
+        );
 
         setSubCategories(uniqueSubCategories);
         setFilteredSubCategories(uniqueSubCategories);
@@ -154,67 +165,76 @@ const SubCategory: React.FC = () => {
       } else {
         setError('Failed to load subcategories');
       }
-      Alert.alert(
-        'Error',
-        'Failed to load subcategories. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Error', 'Failed to load subcategories. Please try again.', [
+        {text: 'OK'},
+      ]);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, [CustomerID, route.params.categoryId]);
 
-  const handleSearch = useCallback((text: string) => {
-    setSearchQuery(text);
-    const filtered = subCategories.filter((subcategory) =>
-      subcategory.SUBCATDESC.toLowerCase().includes(text.toLowerCase())
-    );
-    setFilteredSubCategories(filtered);
-  }, [subCategories]);
+  const handleSearch = useCallback(
+    (text: string) => {
+      setSearchQuery(text);
+      const filtered = subCategories.filter(subcategory =>
+        subcategory.SUBCATDESC.toLowerCase().includes(text.toLowerCase()),
+      );
+      setFilteredSubCategories(filtered);
+    },
+    [subCategories],
+  );
 
-  const handleSubCategoryPress = useCallback((item: SubCategoryItem) => {
-    console.log("Navigating to ItemDetailScreen with:", {
-      subcategoryId: item.SUBCATID,
-      subcategoryName: item.SUBCATDESC,
-      subcategoryImage: item.imageUrl,
-      customerID: item.CustomerID || CustomerID
-    });
+  const handleSubCategoryPress = useCallback(
+    (item: SubCategoryItem) => {
+      console.log('Navigating to ItemDetailScreen with:', {
+        subcategoryId: item.SUBCATID,
+        subcategoryName: item.SUBCATDESC,
+        subcategoryImage: item.imageUrl,
+        customerID: item.CustomerID || CustomerID,
+      });
 
-    navigation.navigate('ItemDetailScreen', {
-      subcategoryId: item.SUBCATID,
-      subcategoryName: item.SUBCATDESC,
-      subcategoryImage: item.imageUrl,
-      customerID: item.CustomerID || CustomerID || ''
-    });
-  }, [navigation, CustomerID]);
+      navigation.navigate('ItemDetailScreen', {
+        subcategoryId: item.SUBCATID,
+        subcategoryName: item.SUBCATDESC,
+        subcategoryImage: item.imageUrl,
+        customerID: item.CustomerID || CustomerID || '',
+      });
+    },
+    [navigation, CustomerID],
+  );
 
-  const renderSubCategoryItem = useCallback(({ item }: { item: SubCategoryItem }) => {
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        activeOpacity={0.7}
-        onPress={() => handleSubCategoryPress(item)}
-      >
-        <View style={styles.imageContainer}>
-          <Image
-            source={item.imageUrl}
-            style={styles.cardImage}
-            resizeMode="contain"
-            onError={(error) => {
-              console.warn(`Failed to load image for subcategory ${item.SUBCATID}:`, error);
-            }}
-          />
-        </View>
-        <View style={styles.cardContent}>
-          <Text style={styles.categoryCode}>{item.SUBCATCODE}</Text>
-          <Text style={styles.categoryName} numberOfLines={2}>
-            {item.SUBCATDESC}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }, [handleSubCategoryPress]);
+  const renderSubCategoryItem = useCallback(
+    ({item}: {item: SubCategoryItem}) => {
+      return (
+        <TouchableOpacity
+          style={styles.card}
+          activeOpacity={0.7}
+          onPress={() => handleSubCategoryPress(item)}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={item.imageUrl}
+              style={styles.cardImage}
+              resizeMode="contain"
+              onError={error => {
+                console.warn(
+                  `Failed to load image for subcategory ${item.SUBCATID}:`,
+                  error,
+                );
+              }}
+            />
+          </View>
+          <View style={styles.cardContent}>
+            <Text style={styles.categoryCode}>{item.SUBCATCODE}</Text>
+            <Text style={styles.categoryName} numberOfLines={2}>
+              {item.SUBCATDESC}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    },
+    [handleSubCategoryPress],
+  );
 
   if (loading && !refreshing) {
     return (
@@ -223,27 +243,27 @@ const SubCategory: React.FC = () => {
       </View>
     );
   }
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ddd" />
-
+    // <SafeAreaView style={styles.safeArea}>
+    // <StatusBar barStyle="dark-content" backgroundColor="#ddd" />
+    <LayoutWrapper showHeader={true} route={route}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search subcategories..."
+          placeholderTextColor="#888"
           value={searchQuery}
           onChangeText={handleSearch}
         />
         <TouchableOpacity style={styles.searchButton}>
-          <MaterialIcons name="search" size={24} color="#000" />
+          <MaterialIcons name="search" size={24} style={{color:"#000"}} />
         </TouchableOpacity>
       </View>
 
       <FlatList
         data={filteredSubCategories}
         renderItem={renderSubCategoryItem}
-        keyExtractor={(item) => item.SUBCATID}
+        keyExtractor={item => item.SUBCATID}
         numColumns={2}
         contentContainerStyle={styles.listContainer}
         onRefresh={fetchSubCategories}
@@ -256,7 +276,9 @@ const SubCategory: React.FC = () => {
           </View>
         )}
       />
-    </SafeAreaView>
+
+      {/* <TabBar route={{name: route.name}} /> */}
+    </LayoutWrapper>
   );
 };
 
@@ -303,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     maxWidth: (width - 30) / 2,

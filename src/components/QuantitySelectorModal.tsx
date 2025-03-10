@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,10 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useCart } from '../contexts/CartContext';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {useCart} from '../contexts/CartContext';
+// import {MaterialIcons} from '@expo/vector-icons';
 
 interface QuantitySelectorModalProps {
   isVisible: boolean;
@@ -39,7 +40,7 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
   const navigation = useNavigation<StackNavigationProp<any>>();
   const [inputValue, setInputValue] = useState('1');
   const maxQuantity = item.available_qty;
-  const { addToCart } = useCart();
+  const {addToCart} = useCart();
 
   useEffect(() => {
     if (isVisible) {
@@ -61,7 +62,7 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
       setInputValue(maxQuantity.toString());
       Alert.alert(
         'Invalid Quantity',
-        `Maximum available quantity is ${maxQuantity}`
+        `Maximum available quantity is ${maxQuantity}`,
       );
       return;
     }
@@ -95,7 +96,7 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
     if (quantity > maxQuantity) {
       Alert.alert(
         'Invalid Quantity',
-        `Please select a quantity between 1 and ${maxQuantity}`
+        `Please select a quantity between 1 and ${maxQuantity}`,
       );
       return;
     }
@@ -117,44 +118,42 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
     addToCart(cartItem);
 
     const goToCart = () => {
-        onClose(); // Close the modal first
-        navigation.navigate('PlaceOrderScreen', {
-          selectedItems: [], // Pass relevant parameters as needed
-          customerID: item.customerID,
-          
-        });
-      };
-    
-      Alert.alert(
-        'Added to Cart',
-        `${quantity} ${quantity > 1 ? 'items' : 'item'} added to your cart`,
-        [
-          {
-            text: 'Continue Shopping',
-            onPress: onClose,
-            style: 'cancel',
-          },
-          {
-            text: 'Go to Cart',
-            onPress: goToCart,
-            style: 'default',
-          },
-        ],
-        { cancelable: false }
-      );
+      onClose(); // Close the modal first
+      navigation.navigate('PlaceOrderScreen', {
+        selectedItems: [], // Pass relevant parameters as needed
+        customerID: item.customerID,
+        // stockLotLocationId:item.
+      });
     };
+
+    Alert.alert(
+      'Added to Cart',
+      `${quantity} ${quantity > 1 ? 'items' : 'item'} added to your cart`,
+      [
+        {
+          text: 'Continue Shopping',
+          onPress: onClose,
+          style: 'cancel',
+        },
+        {
+          text: 'Go to Cart',
+          onPress: goToCart,
+          style: 'default',
+        },
+      ],
+      {cancelable: false},
+    );
+  };
 
   return (
     <Modal
       transparent={true}
       visible={isVisible}
       onRequestClose={onClose}
-      animationType="fade"
-    >
+      animationType="fade">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.modalOverlay}
-      >
+        style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Select Quantity</Text>
@@ -167,7 +166,8 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
             <View style={styles.infoRow}>
               <Icon name="package" size={20} color="#F48221" />
               <Text style={styles.modalItemDetail}>
-                Item: <Text style={styles.modalItemValue}>{item.item_name}</Text>
+                Item:{' '}
+                <Text style={styles.modalItemValue}>{item.item_name}</Text>
               </Text>
             </View>
             <View style={styles.infoRow}>
@@ -179,13 +179,15 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
             <View style={styles.infoRow}>
               <Icon name="database" size={20} color="#F48221" />
               <Text style={styles.modalItemDetail}>
-                Available: <Text style={styles.modalItemValue}>{maxQuantity}</Text>
+                Available:{' '}
+                <Text style={styles.modalItemValue}>{maxQuantity}</Text>
               </Text>
             </View>
             <View style={styles.infoRow}>
               <Icon name="box" size={20} color="#F48221" />
               <Text style={styles.modalItemDetail}>
-                Unit: <Text style={styles.modalItemValue}>{item.unit_name}</Text>
+                Unit:{' '}
+                <Text style={styles.modalItemValue}>{item.unit_name}</Text>
               </Text>
             </View>
           </View>
@@ -194,11 +196,11 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
             <TouchableOpacity
               style={[
                 styles.quantityButton,
-                (!inputValue || parseInt(inputValue) <= 1) && styles.quantityButtonDisabled,
+                (!inputValue || parseInt(inputValue) <= 1) &&
+                  styles.quantityButtonDisabled,
               ]}
               onPress={decrementQuantity}
-              disabled={!inputValue || parseInt(inputValue) <= 1}
-            >
+              disabled={!inputValue || parseInt(inputValue) <= 1}>
               <Icon name="minus" size={20} color="white" />
             </TouchableOpacity>
 
@@ -214,11 +216,11 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
             <TouchableOpacity
               style={[
                 styles.quantityButton,
-                parseInt(inputValue) >= maxQuantity && styles.quantityButtonDisabled,
+                parseInt(inputValue) >= maxQuantity &&
+                  styles.quantityButtonDisabled,
               ]}
               onPress={incrementQuantity}
-              disabled={parseInt(inputValue) >= maxQuantity}
-            >
+              disabled={parseInt(inputValue) >= maxQuantity}>
               <Icon name="plus" size={20} color="white" />
             </TouchableOpacity>
           </View>
@@ -229,7 +231,9 @@ const QuantitySelectorModal: React.FC<QuantitySelectorModalProps> = ({
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={handleConfirm}>
               <Icon name="shopping-cart" size={20} color="white" />
               <Text style={styles.confirmButtonText}>Add to Cart</Text>
             </TouchableOpacity>
@@ -255,7 +259,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },

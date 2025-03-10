@@ -18,7 +18,7 @@ const LotReportScreen = () => {
       <View style={styles.header}>
         <Text style={styles.enterpriseName}>UNICORP ENTERPRISES</Text>
         <TouchableOpacity style={styles.cartButton}>
-          <MaterialIcons name="shopping-cart" size={25} color="#007bff" />
+          <MaterialIcons name="shopping-cart" size={25} style={{color:"#007bff"}} />
         </TouchableOpacity>
       </View>
 

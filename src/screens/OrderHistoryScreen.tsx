@@ -1,7 +1,6 @@
- 
 // OrderHistoryScreen.tsx
 
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -13,13 +12,13 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
-  Animated
+  Animated,
 } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from '../type/type';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {MainStackParamList} from '../type/type';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api.config';
+import {API_ENDPOINTS} from '../config/api.config';
 
 interface OrderHeader {
   ID: number;
@@ -63,36 +62,48 @@ interface OrderResponse {
   details: OrderDetail[];
 }
 
-type OrderHistoryScreenRouteProp = RouteProp<MainStackParamList, 'OrderHistoryScreen'>;
-type OrderHistoryScreenNavigationProp = StackNavigationProp<MainStackParamList, 'OrderHistoryScreen'>;
+type OrderHistoryScreenRouteProp = RouteProp<
+  MainStackParamList,
+  'OrderHistoryScreen'
+>;
+type OrderHistoryScreenNavigationProp = StackNavigationProp<
+  MainStackParamList,
+  'OrderHistoryScreen'
+>;
 
 interface OrderHistoryScreenProps {
   route: OrderHistoryScreenRouteProp;
   navigation: OrderHistoryScreenNavigationProp;
 }
 
-const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+const DetailRow: React.FC<{label: string; value: string}> = ({
+  label,
+  value,
+}) => (
   <View style={styles.detailRow}>
     <Text style={styles.label}>{label}:</Text>
     <Text style={styles.value}>{value || 'N/A'}</Text>
   </View>
 );
 
-const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigation }) => {
-  
-  const { orderId, orderNo, transporterName, deliveryDate, orderDate, items } = route.params;
+const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({
+  route,
+  navigation,
+}) => {
+  const {orderId, orderNo, transporterName, deliveryDate, orderDate, items} =
+    route.params;
   const [orderData, setOrderData] = useState<OrderResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [rotationValues] = useState<{ [key: number]: Animated.Value }>({});
+  const [rotationValues] = useState<{[key: number]: Animated.Value}>({});
 
   const fetchOrderDetails = async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       // Create fallback data using route params
       const fallbackData: OrderResponse = {
         success: true,
@@ -111,10 +122,10 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
           UPDATEDON: '',
           ORDER_BY: '',
           ORDER_MODE: '',
-          REMARK: ''
+          REMARK: '',
         },
-        details: items.map((item: any) => ({
-          ID: item.ID || Date.now(),
+        details: items.map((item: any, index: number) => ({
+          ID: item.ID || `${orderId}-${index}`,
           FK_ORDER_ID: orderId,
           FK_ITEM_ID: item.ITEM_ID,
           ITEM_NAME: item.ITEM_NAME,
@@ -128,10 +139,10 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
           REMARK: item.REMARK || '',
           ORDERED_QUANTITY: item.ORDERED_QUANTITY,
           UNIT_NAME: item.UNIT_NAME,
-          NET_QUANTITY: item.NET_QUANTITY
-        }))
+          NET_QUANTITY: item.NET_QUANTITY,
+        })),
       };
-      
+
       setOrderData(fallbackData);
     } catch (error: any) {
       console.error('Error handling order details:', error);
@@ -163,10 +174,9 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
     }
   };
 
-  const renderOrderDetail = ({ item }: { item: OrderDetail }) => {
+  const renderOrderDetail = ({item}: {item: OrderDetail}) => {
     const isExpanded = expandedId === item.ID;
 
-    
     // Initialize rotation value for this item if it doesn't exist
     if (!rotationValues[item.ID]) {
       rotationValues[item.ID] = new Animated.Value(isExpanded ? 1 : 0);
@@ -174,20 +184,13 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
 
     const rotate = rotationValues[item.ID].interpolate({
       inputRange: [0, 1],
-      outputRange: ['0deg', '180deg']
+      outputRange: ['0deg', '180deg'],
     });
-
-
-    // const rotate = rotateAnimation.interpolate({
-    //   inputRange: [0, 1],
-    //   outputRange: ['0deg', '180deg']
-    // });
 
     return (
       <TouchableOpacity
         onPress={() => toggleExpand(item.ID)}
-        activeOpacity={0.9}
-      >
+        activeOpacity={0.9}>
         <Animated.View style={[styles.card, isExpanded && styles.expandedCard]}>
           <View style={styles.mainContent}>
             <View style={styles.cardHeader}>
@@ -198,21 +201,24 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
                 </View>
               </View>
               <View style={styles.statusContainer}>
-                <View style={[styles.statusBadge, 
-                  { backgroundColor: item.STATUS === 'NEW' ? '#e0f2fe' : '#f3f4f6' }
-                ]}>
-                  <Text style={[styles.statusText, 
-                    { color: item.STATUS === 'NEW' ? '#0284c7' : '#6B7280' }
+                <View
+                  style={[
+                    styles.statusBadge,
+                    {
+                      backgroundColor:
+                        item.STATUS === 'NEW' ? '#e0f2fe' : '#f3f4f6',
+                    },
                   ]}>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      {color: item.STATUS === 'NEW' ? '#0284c7' : '#6B7280'},
+                    ]}>
                     {item.STATUS}
                   </Text>
                 </View>
-                <Animated.Text 
-                  style={[
-                    styles.menuIcon, 
-                    { transform: [{ rotate }] }
-                  ]}
-                >
+                <Animated.Text
+                  style={[styles.menuIcon, {transform: [{rotate}]}]}>
                   ▼
                 </Animated.Text>
               </View>
@@ -227,17 +233,26 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
                   <View style={styles.quantityContainer}>
                     <View style={styles.quantityBox}>
                       <Text style={styles.quantityLabel}>Ordered</Text>
-                      <Text style={styles.quantityValue}>{item.ORDERED_QUANTITY}</Text>
+                      <Text style={styles.quantityValue}>
+                        {item.ORDERED_QUANTITY}
+                      </Text>
                     </View>
                     <View style={styles.quantityBox}>
                       <Text style={styles.quantityLabel}>Available</Text>
-                      <Text style={styles.quantityValue}>{item.AVAILABLE_QTY}</Text>
+                      <Text style={styles.quantityValue}>
+                        {item.AVAILABLE_QTY}
+                      </Text>
                     </View>
                   </View>
                   <DetailRow label="Unit Name" value={item.UNIT_NAME || ''} />
-                  <DetailRow label="Net Quantity" value={String(item.NET_QUANTITY || '')} />
+                  <DetailRow
+                    label="Net Quantity"
+                    value={String(item.NET_QUANTITY || '')}
+                  />
                   <DetailRow label="Mark" value={item.MARK} />
-                  {item.REMARK && <DetailRow label="Remark" value={item.REMARK} />}
+                  {item.REMARK && (
+                    <DetailRow label="Remark" value={item.REMARK} />
+                  )}
                 </View>
               </View>
             )}
@@ -254,7 +269,7 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
     }
 
     const isExpanding = expandedId !== detailId;
-    
+
     Animated.timing(rotationValues[detailId], {
       toValue: isExpanding ? 1 : 0,
       duration: 200,
@@ -291,13 +306,13 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f3f4f6" />
-      
+
       <View style={styles.titleContainer}>
         <Text style={styles.screenTitle}>Order History</Text>
       </View>
 
       <View style={styles.headerCard}>
-        <Text style={styles.orderNo}>Order {orderData?.header.ID}</Text>
+        <Text style={styles.orderNo}>Order ID : {orderData?.header.ID}</Text>
         <View style={styles.dateContainer}>
           <View style={styles.dateBox}>
             <Text style={styles.dateLabel}>Order Date</Text>
@@ -320,10 +335,10 @@ const OrderHistoryScreen: React.FC<OrderHistoryScreenProps> = ({ route, navigati
           </Text>
         </View>
       </View>
-      
+
       <FlatList
         data={orderData?.details}
-        keyExtractor={item => `detail-${item.ID}`}
+        keyExtractor={item => `detail-${item.FK_ORDER_ID}${item.ID}`}
         renderItem={renderOrderDetail}
         refreshControl={
           <RefreshControl
@@ -364,7 +379,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
@@ -425,7 +440,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },

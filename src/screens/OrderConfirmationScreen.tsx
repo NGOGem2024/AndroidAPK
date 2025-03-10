@@ -86,8 +86,19 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmitOrder = async () => {
-    if (!orderDetails.deliveryDate || !orderDetails.transporterName) {
-      Alert.alert('Error', 'Please fill in all required fields');
+    if (
+      !orderDetails.deliveryDate ||
+      !orderDetails.transporterName ||
+      !editableStockLotLocationId
+    ) {
+      let errorMessage = 'Please fill in all required fields:';
+
+      if (!orderDetails.deliveryDate) errorMessage += '\n- Delivery Date';
+      if (!orderDetails.transporterName) errorMessage += '\n- Transporter Name';
+      if (!editableStockLotLocationId)
+        errorMessage += '\n- Stock Lot Location ID';
+
+      Alert.alert('Missing Fields', errorMessage);
       return;
     }
 
@@ -152,8 +163,8 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
         }));
 
         Alert.alert(
-          'SuccesFs',
-          `Order ${orderNo} placed successfully!`,
+          'Success',
+          `Order ${orderId} placed successfully!`,
           [
             {
               text: 'View Order',
@@ -168,22 +179,22 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
                 });
               },
             },
-            {
-              text: 'Back to Home',
-              onPress: () => {
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: 'BottomTabNavigator',
-                      params: {
-                        screen: 'Home',
-                      },
-                    },
-                  ],
-                });
-              },
-            },
+            // {
+            //   text: 'Back to Home',
+            //   onPress: () => {
+            //     navigation.reset({
+            //       index: 0,
+            //       routes: [
+            //         {
+            //           name: 'BottomTabNavigator',
+            //           params: {
+            //             screen: 'Home',
+            //           },
+            //         },
+            //       ],
+            //     });
+            //   },
+            // },
           ],
           {
             cancelable: false,
@@ -219,7 +230,10 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Delivery Date *</Text>
+              <Text style={styles.fieldLabel}>
+                Delivery Date
+                <Text style={{color: 'red'}}> *</Text>
+              </Text>
               <TextInput
                 style={styles.fieldInput}
                 value={orderDetails.deliveryDate}
@@ -231,7 +245,10 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Transporter Name *</Text>
+              <Text style={styles.fieldLabel}>
+                Transporter Name
+                <Text style={{color: 'red'}}> *</Text>
+              </Text>
               <TextInput
                 style={styles.fieldInput}
                 value={orderDetails.transporterName}
@@ -244,7 +261,10 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
 
             {/* Editable Stock Lot Location ID Field */}
             <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Stock Lot Location ID</Text>
+              <Text style={styles.fieldLabel}>
+                Stock Lot Location ID
+                <Text style={{color: 'red'}}> *</Text>
+              </Text>
               <TextInput
                 style={styles.fieldInput}
                 value={editableStockLotLocationId}
@@ -299,7 +319,7 @@ const OrderConfirmationScreen: React.FC<OrderConfirmationScreenProps> = ({
                 <Ionicons
                   name="checkmark-circle-outline"
                   size={24}
-                  color="#FFFFFF"
+                  style={{color:"#FFFFFF"}}
                 />
               </>
             )}
